@@ -1,0 +1,119 @@
+{% extends 'layout.html' %} {% block body %}
+
+<div id="google_translate_element"></div>
+    <script src="https://translate.google.com./translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+      function googleTranslateElementInit(){
+        new google.translate.TranslateElement(
+           {pageLanguage: 'en'},
+           'google_translate_element'
+        );
+      }
+    </script>
+<style>
+  html body {
+    background-color: rgb(206, 206, 228);
+  }
+  #output-image {
+  display: block;
+  margin: auto;
+  width: 50%;
+  height: auto;
+}
+
+</style>
+<br /><br />
+  <h2 style="text-align: center; margin: 0px; color: black">
+    <b>Find out which disease has affected your plant</b>
+  </h2>
+  <br />
+  <br>
+
+<div style="
+    width: 350px;
+    height: 50rem;
+    margin: 0px auto;
+    color: black;
+    border-radius: 25px;
+    padding: 10px 10px;
+    font-weight: bold;
+  ">
+
+  
+
+
+  <form class="form-signin" method=post enctype=multipart/form-data>
+
+    <h2 class="h4 mb-3 font-weight-normal"><b>Please Upload The Image</b></h2>
+    <input type="file" name="file" class="form-control-file" id="inputfile" onchange="preview_image(event)" style="font-weight: bold;">
+    <!-- <input  name="file" class="form-control-file" id="inputfile" onchange="preview_image(event)" style="font-weight: bold;" capture="camera"> -->
+
+    <br>
+    <br>
+    <div style="text-align:center;">
+        <video id="video" width="300" height="300" autoplay></video>
+        <br>
+        <button id="capture" class="btn btn-lg btn-primary" type="button" style="font-weight: bold;">Take a picture</button>
+    </div>
+    <br>
+    <canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
+    <img id="output-image" class="rounded mx-auto d-block" />
+    <button class="btn btn-lg btn-primary btn-block" type="submit" style="font-weight: bold;">Predict</button>
+
+
+  </form>
+</div>
+
+
+<script type="text/javascript">
+    var video = document.getElementById('video');
+    var canvas = document.getElementById('canvas');
+    var capture = document.getElementById('capture');
+    var context = canvas.getContext('2d');
+    
+    // get user's camera stream
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        video.srcObject = stream;
+      })
+      .catch(function(error) {
+        console.log('Error accessing camera: ' + error.message);
+      });
+
+    capture.addEventListener('click', function() {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        var image = canvas.toDataURL('image/png');
+        // create a link element
+  var downloadLink = document.createElement('a');
+
+// set the href and download attributes
+downloadLink.href = image;
+downloadLink.download = 'captured-image.png';
+
+// trigger a click event on the link to download the image
+downloadLink.click();
+        var output = document.getElementById('output-image');
+        output.src = image;
+        video.pause();
+        video.style.display = 'none';
+        canvas.style.display = 'none';
+        capture.style.display = 'none';
+    });
+
+    function preview_image(event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          var output = document.getElementById('output-image');
+          output.src = reader.result;
+          video.pause();
+          video.style.display = 'none';
+          capture.style.display = 'none';
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+
+</div>
+{% endblock %}
+
+
